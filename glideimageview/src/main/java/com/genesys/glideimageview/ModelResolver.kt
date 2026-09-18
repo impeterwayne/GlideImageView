@@ -18,6 +18,12 @@ object DefaultModelResolver : ModelResolver {
     override fun resolve(context: Context, source: Any): Any? = when {
         source !is String -> source
         source.isBlank() -> null
+        source.startsWith("@drawable/") || source.startsWith("@mipmap/") -> {
+            val defType = if (source.startsWith("@mipmap/")) "mipmap" else "drawable"
+            val name = source.substringAfter('/')
+            val resId = context.resources.getIdentifier(name, defType, context.packageName)
+            if (resId != 0) resId else null
+        }
         KNOWN_SCHEMES.any { source.startsWith(it, ignoreCase = true) } -> source
         source.startsWith('/') -> File(source)
         else -> assetUri(source)

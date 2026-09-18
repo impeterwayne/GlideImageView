@@ -1,6 +1,6 @@
 # GlideImageView
 
-A Glide-backed `ImageView` for Android designed for declarative image loading in XML via `app:glideSrc`, featuring **instant Android Studio Layout Editor preview** for assets and zero-boilerplate loading. When dynamic runtime behavior or custom models are needed, it extends seamlessly in Kotlin without modifying library code.
+A Glide-backed `ImageView` for Android designed for declarative image loading in XML via `app:glideSrc`, featuring **instant Android Studio Layout Editor preview** for assets and drawables, and zero-boilerplate loading. When dynamic runtime behavior or custom models are needed, it extends seamlessly in Kotlin without modifying library code.
 
 ```xml
 <com.genesys.glideimageview.GlideImageView
@@ -17,26 +17,26 @@ A Glide-backed `ImageView` for Android designed for declarative image loading in
 
 | Attribute | Format | Description |
 |---|---|---|
-| `app:glideSrc` | `string` | **Primary feature:** asset path (`images/...`), `@string/...`, remote URL, file, or URI |
+| `app:glideSrc` | `string\|reference` | **Primary feature:** drawable resource (`@drawable/...`), asset path (`images/...`), remote URL, file, or URI |
 | `app:glidePlaceholder` | `reference` | Drawable resource shown while loading |
 | `app:glideError` | `reference` | Drawable resource shown when the load fails |
-| `app:glideFallback` | `reference` | Drawable resource shown when the source is `null` |
+| `app:glideCacheType` | `enum` | Disk cache strategy: `all`, `none`, `data`, `resource`, `automatic` |
+| `app:glideSkipMemoryCache` | `boolean` | Whether to skip Glide's in-memory bitmap pool/cache (default: false) |
 | `app:glideRadius` | `dimension` | Corner radius (adds `Shape.RoundedCorners`) |
 | `app:glideCircle` | `boolean` | Circular crop (adds `Shape.Circle`) |
 | `app:glideCrossFade` | `boolean` | Enables crossfade transition |
 | `app:glideCrossFadeDuration` | `integer` | Crossfade duration in milliseconds (default: 300ms) |
-| `?attr/glideImageViewStyle` | `reference` | Theme-level default style applied to all `GlideImageView`s |
 
 ---
 
-## Feature Spotlight: `app:glideSrc` with Assets
+## `app:glideSrc` with Drawables & Assets
 
-The flagship feature of `GlideImageView` is `app:glideSrc`, bringing declarative, zero-boilerplate image loading straight into your layout files—with first-class support for asset sources.
+The flagship feature of `GlideImageView` is `app:glideSrc`, bringing declarative, zero-boilerplate image loading straight into your layout files—with first-class support for drawable resources and asset sources.
 
 ### 1. Live Layout Editor Preview
 Standard image loaders in Android leave views as blank grey or white boxes in Android Studio design mode.
 
-With `app:glideSrc`, **asset paths render live inside the Layout Editor**:
+With `app:glideSrc`, **drawables and assets render live inside the Layout Editor**:
 
 ```xml
 <!-- Previews immediately in the Android Studio Layout Editor -->
@@ -45,54 +45,116 @@ With `app:glideSrc`, **asset paths render live inside the Layout Editor**:
     android:layout_width="match_parent"
     android:layout_height="200dp"
     android:scaleType="centerCrop"
-    app:glideSrc="images/sample_banner.webp"
-    app:glidePlaceholder="@drawable/placeholder" />
+    app:glideSrc="@drawable/placeholder_image"
+    app:glidePlaceholder="@drawable/placeholder_image" />
 ```
 
+- **Drawable resources (`@drawable/...`, `@mipmap/...`)**: Direct references to app drawables and mipmaps preview live in design mode and can be composed with shapes (`app:glideCircle`, `app:glideRadius`).
 - **Asset paths (`images/...`)**: Decoded directly from `src/main/assets/` during edit mode (`isInEditMode`), so you see actual design assets right inside Android Studio without running the app.
-- **Resource strings (`@string/...`)**: Fully supported for referencing asset paths without hardcoding strings in layouts.
 - **Remote URLs (`https://...`)**: Safely display `app:glidePlaceholder` during edit mode.
 
 ### 2. Zero Activity / Fragment Boilerplate
 You no longer need to write `Glide.with(context).load(...).into(imageView)` in your Activity, Fragment, or ViewHolder just to display an image. Specifying `app:glideSrc` in XML automatically handles model resolution, request building, placeholder display, and lifecycle loading.
 
 ```xml
-<!-- Defined cleanly in XML using strings.xml -->
+<!-- Load a drawable resource with circle crop directly in XML -->
 <com.genesys.glideimageview.GlideImageView
     android:id="@+id/avatarImage"
     android:layout_width="80dp"
     android:layout_height="80dp"
-    app:glideSrc="@string/sample_asset_avatar"
-    app:glidePlaceholder="@drawable/avatar_placeholder" />
+    app:glideCircle="true"
+    app:glideSrc="@drawable/sample_circle_avatar"
+    app:glidePlaceholder="@drawable/placeholder_image" />
 ```
 
 ### 3. Supported Sources
-While asset paths provide the best Layout Editor experience, `app:glideSrc` transparently accepts any source format:
+While drawable resources and asset paths provide the best Layout Editor experience, `app:glideSrc` transparently accepts any source format:
 
 | Format | Example | Layout Editor Preview |
 |---|---|---|
+| **Drawable resource** | `@drawable/sample_banner` | **Yes** (renders drawable resource) |
 | **Asset path** | `images/sample_banner.webp` | **Yes** (renders asset bitmap live) |
-| **String resource** | `@string/sample_asset_banner` | **Yes** (resolves string to asset bitmap) |
 | **Resource URI** | `android.resource://com.example.app/drawable/logo` | **Yes** (renders drawable resource) |
 | **Remote URL** | `https://example.com/photo.jpg` | Shows placeholder |
 | **Local file** | `/sdcard/photo.jpg` or `file:///storage/...` | Shows placeholder |
 | **Content URI** | `content://media/external/images/media/1` | Shows placeholder |
 | **Data URI** | `data:image/png;base64,...` | Shows placeholder |
 
-### 4. Theme-Level Defaults
-Configure standard placeholders and error states once in your application theme, keeping layout XML clean:
+### 4. Process-Wide & Style Defaults
+Configure standard placeholders and error states once process-wide via `GlideImageViewConfig.defaults`, keeping layout XML clean:
+
+```kotlin
+GlideImageViewConfig.defaults = ImageOptions(
+    placeholder = R.drawable.placeholder_image,
+    error = R.drawable.error_image,
+    crossFade = true
+)
+```
+
+You can also define reusable XML styles and apply them directly to any view using standard `style="@style/..."`:
 
 ```xml
-<style name="Theme.MyApp" parent="Theme.Material3.DayNight">
-    <item name="glideImageViewStyle">@style/Widget.MyApp.GlideImageView</item>
-</style>
-
-<style name="Widget.MyApp.GlideImageView" parent="Widget.GlideImageView">
-    <item name="glidePlaceholder">@drawable/placeholder</item>
-    <item name="glideError">@drawable/error</item>
-    <item name="glideFallback">@drawable/fallback</item>
-</style>
+<com.genesys.glideimageview.GlideImageView
+    style="@style/Widget.MyApp.Thumbnail"
+    android:layout_width="80dp"
+    android:layout_height="80dp"
+    app:glideSrc="images/avatar.webp" />
 ```
+
+### 5. Caching & Memory Options (XML & Kotlin)
+Control disk and memory caching declaratively in XML or programmatically:
+
+```xml
+<com.genesys.glideimageview.GlideImageView
+    android:layout_width="match_parent"
+    android:layout_height="160dp"
+    app:glideSrc="@drawable/placeholder_image"
+    app:glideCacheType="none"
+    app:glideSkipMemoryCache="true" />
+```
+
+- **`app:glideCacheType`**: Choose from `all`, `none`, `data`, `resource`, or `automatic`.
+- **`app:glideSkipMemoryCache`**: Set to `true` to bypass Glide's in-memory bitmap cache.
+
+In Kotlin:
+```kotlin
+// Per-view properties
+image.cacheType = CacheType.NONE
+image.skipMemoryCache = true
+
+// Or via ImageOptions
+image.options = image.options
+    .withCacheType(CacheType.DATA)
+    .withSkipMemoryCache(true)
+```
+
+**Drawable resources are not cached by default.** When the resolved model is a packaged
+resource — a resource id (including `@drawable/…` and `@mipmap/…` sources), a `Drawable`, or an
+`android.resource://` uri — the request is built with `DiskCacheStrategy.NONE` and
+`skipMemoryCache(true)`. The bytes already live in the APK, so caching them only duplicates what
+the resource system holds.
+
+Set a cache strategy and yours wins — nothing is forced on you:
+
+```kotlin
+image.cacheType = CacheType.RESOURCE  
+```
+
+Or app-wide via `GlideImageViewConfig.defaults`. `RequestDecorator`s still run afterwards and can
+override either way.
+
+### 6. Cache Signatures
+No signature is applied unless you ask for one — cache keying is left to Glide's defaults. Set one explicitly when you need to invalidate on your own terms:
+
+```kotlin
+image.signature = ObjectKey(user.avatarUpdatedAt)
+
+// Or via ImageOptions
+image.options = image.options.withSignature(ObjectKey(file.lastModified()))
+```
+
+For drawable resources specifically, note that Glide keys on the numeric resource id, and aapt can reassign ids between builds. If you disk-cache local resources and ship frequent updates, add Glide's own
+`ApplicationVersionSignature.obtain(context)` — either per view, or globally through a `RequestDecorator`.
 
 ---
 
@@ -115,67 +177,17 @@ image.clear()
 
 ---
 
-## The Three Extension Points
+## Extension Points
 
-Everything in the library is built on top of three composable seams, running in this order:
+Everything in the library is built on top of three composable seams:
 
-### 1. `ModelResolver` — what gets loaded
+1. **`ModelResolver`** — Intercept and rewrite what gets loaded (domain models like `Avatar`, bearer-token headers, custom schemes).
+2. **`Shape`** — Composable bitmap transformations (`Circle`, `RoundedCorners`, `Squircle`, `Border`, `Grayscale`, or any Glide transformation).
+3. **`RequestDecorator`** — Fine-grained Glide request tuning (`diskCacheStrategy`, `thumbnail`, `priority`, dimension `override`).
 
-`source` is `Any?`, so anything Glide understands works unchanged. A resolver sits in front of it and can rewrite the source into a different model: add auth headers, teach the view a new scheme, or map a domain object onto a URL.
+Additionally, `GlideImageView` provides swappable **`RequestManagerFactory`** support and global or per-view **`OnLoadListener`** telemetry.
 
-```kotlin
-class AuthHeaderResolver(private val token: () -> String?) : ModelResolver {
-    override fun resolve(context: Context, source: Any): Any? {
-        if (source !is String || !source.startsWith("http")) return null // pass to the next one
-        return GlideUrl(source, LazyHeaders.Builder()
-            .addHeader("Authorization", "Bearer ${token() ?: return null}")
-            .build())
-    }
-}
-
-GlideImageViewConfig.modelResolvers += AuthHeaderResolver(tokenStore::current) // whole app
-image.modelResolvers += AuthHeaderResolver(tokenStore::current)                // one view
-```
-
-**Resolution order:** Per-view resolvers → `GlideImageViewConfig.modelResolvers` → `DefaultModelResolver` (handles known URI schemes, `/sdcard/...` file paths, and relative asset paths).
-
-### 2. `Shape` — how the bitmap is transformed
-
-Shapes are a **list**, not a flag, so they compose. `appliesScaleType` controls whether the view's `ScaleType` is baked into the bitmap first—true for masks, false for effects and transformations that scale on their own.
-
-```kotlin
-data class SquircleShape(val curvature: Float = 4f) : Shape {
-    override fun transformation(view: ImageView) = SquircleTransformation(curvature)
-}
-
-image.shapes = listOf(SquircleShape(), GrayscaleShape, BorderShape(3f, Color.BLUE))
-image.shapes += Shape.of(BlurTransformation(12))   // wrap any Glide Transformation
-```
-
-Built in: `Shape.Original`, `Shape.Circle`, `Shape.RoundedCorners(px)`.
-`ImageOptions.transformations` takes raw Glide transformations when you do not need a named shape.
-
-### 3. `RequestDecorator` — everything else on the request
-
-The escape hatch for what `ImageOptions` deliberately does not model: `diskCacheStrategy`, `signature`, `thumbnail`, `override`, `priority`, `format`, `timeout`.
-
-```kotlin
-GlideImageViewConfig.decorators += RequestDecorator { _, r -> r.diskCacheStrategy(ALL) }
-image.decorators += RequestDecorator { v, r -> r.override(v.width, v.height) }
-```
-
-Global decorators run first, then the view's own.
-
----
-
-## Configuration Precedence Order
-
-| Precedence | Level | How | Scope |
-|---|---|---|---|
-| 1 (Lowest) | `GlideImageViewConfig.defaults` | `ImageOptions(...)` in `Application.onCreate` | Every view in the process |
-| 2 | Theme style | `<item name="glideImageViewStyle">@style/...` | Every view using that theme |
-| 3 | XML attributes | `app:glideSrc="…"`, `app:glidePlaceholder="…"` | One view |
-| 4 (Highest) | Runtime code | `image.load(...)`, `image.updateOptions { ... }` | One view |
+**For complete documentation, architectural details, and copy-paste recipes, see [EXTENSIONS.md](EXTENSIONS.md).**
 
 ---
 
@@ -202,49 +214,12 @@ GlideImageViewConfig.listeners += LoadStats
 
 ---
 
-## In a RecyclerView
-
-```kotlin
-override fun onBindViewHolder(holder: VH, position: Int) = holder.image.load(items[position])
-override fun onViewRecycled(holder: VH) = holder.image.clear()
-```
-
-`clear()` cancels any in-flight request and resets the view state, ensuring re-binding recycled rows cleanly reloads rather than displaying stale bitmaps or leaving cells blank.
-
----
 
 ## Other Notes
 
 - **Layout-Editor Preview:** Asset sources (`images/...`) and drawable resources render immediately in Android Studio; network sources fall back to the configured placeholder.
-- **Swappable `Glide.with`:** Set `GlideImageViewConfig.requestManagerFactory` globally or `image.requestManagerFactory` per view.
-- **Subclassing:** `resolveModel`, `buildRequest`, `buildTransformations`, `scaleTypeTransformation`, `renderPreview`, and `requestManager` are all `protected open`.
-
----
-
-## Project Structure
-
-```
-GlideExt/
-├── glideimageview/                     # Android library module
-│   └── src/main/java/com/genesys/glideimageview/
-│       ├── GlideImageView.kt           # the view & XML attribute handling
-│       ├── ImageOptions.kt             # immutable render options
-│       ├── Shape.kt                    # transformation seam
-│       ├── ModelResolver.kt            # source seam + DefaultModelResolver
-│       ├── RequestDecorator.kt         # raw-request seam
-│       ├── OnLoadListener.kt           # callbacks
-│       └── GlideImageViewConfig.kt     # process-wide configuration
-└── sample/                             # demo app (5 tabs)
-    └── src/main/java/com/genesys/glideimageview/sample/
-        ├── SampleApp.kt                # installs app-wide configuration
-        ├── ext/                        # custom shapes, resolvers, decorators
-        └── demo/                       # XML Attributes · Shapes · List (1000) · Extensions · Playground
-```
-
-- **XML Attributes tab:** Demonstrates declarative XML image loading via `app:glideSrc` (direct asset paths with live layout editor preview, `@string/...` resources, circular & rounded shapes, remote URLs, and error/null fallbacks) with zero Kotlin `load()` calls.
-- **Playground tab:** Live interactive test bench for XML attributes, `app:glideSrc`, corner radius slider, shapes, and scale types.
-- **Extensions tab:** Domain models (`Avatar`), bearer-token auth headers, squircle mask, and decorators implemented outside the library module.
-- **List (1000) tab:** 1,000 cells testing recycling, fast flings, request cancellation, and telemetry.
+- **Extensions & Lifecycle:** See [EXTENSIONS.md](EXTENSIONS.md) for custom `ModelResolver`s, `Shape`s, `RequestDecorator`s, and swappable `RequestManagerFactory`.
+- **Subclassing:** `resolveModel`, `buildRequest`, `buildTransformations`, `scaleTypeTransformation`, `renderPreview`, and `requestManager` are all `protected open` (documented in [EXTENSIONS.md](EXTENSIONS.md#6-subclassing)).
 
 ---
 

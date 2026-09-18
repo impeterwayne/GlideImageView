@@ -12,42 +12,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Header Card explaining XML Loading -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="@color/surface"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="0dp"
-            app:strokeColor="@color/card_stroke"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/xml_header_title"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/xml_header_subtitle"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="13sp" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- 1. Direct Asset Path -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -98,11 +62,10 @@
                     android:textColor="@color/text_secondary"
                     android:textSize="11sp"
                     android:textStyle="italic" />
-
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 2. Asset via strings.xml -->
+        <!-- 2. Drawable Resource -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -122,7 +85,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/xml_asset_res_title"
+                    android:text="@string/xml_drawable_title"
                     android:textColor="@color/text_primary"
                     android:textSize="15sp"
                     android:textStyle="bold" />
@@ -132,21 +95,21 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:fontFamily="monospace"
-                    android:text="@string/xml_asset_res_code"
+                    android:text="@string/xml_drawable_code"
                     android:textColor="@color/primary"
                     android:textSize="12sp" />
 
                 <com.genesys.glideimageview.GlideImageView
-                    android:id="@+id/imgAssetRes"
+                    android:id="@+id/imgDrawable"
                     android:layout_width="match_parent"
                     android:layout_height="160dp"
                     android:layout_marginTop="12dp"
                     android:contentDescription="@string/cd_demo_image"
                     android:scaleType="centerCrop"
-                    app:glideSrc="@string/sample_asset_banner" />
+                    app:glideSrc="@drawable/placeholder_image" />
 
                 <TextView
-                    android:id="@+id/statusAssetRes"
+                    android:id="@+id/statusDrawable"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
@@ -157,7 +120,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 3. Circular Crop with Asset -->
+        <!-- 3. Circular Crop with Drawable -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -177,7 +140,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/xml_asset_circle_title"
+                    android:text="@string/xml_drawable_circle_title"
                     android:textColor="@color/text_primary"
                     android:textSize="15sp"
                     android:textStyle="bold" />
@@ -187,12 +150,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:fontFamily="monospace"
-                    android:text="@string/xml_asset_circle_code"
+                    android:text="@string/xml_drawable_circle_code"
                     android:textColor="@color/primary"
                     android:textSize="12sp" />
 
                 <com.genesys.glideimageview.GlideImageView
-                    android:id="@+id/imgAssetCircle"
+                    android:id="@+id/imgDrawableCircle"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_gravity="center_horizontal"
@@ -200,10 +163,10 @@
                     android:contentDescription="@string/cd_demo_image"
                     android:scaleType="centerCrop"
                     app:glideCircle="true"
-                    app:glideSrc="@string/sample_asset_avatar" />
+                    app:glideSrc="@drawable/sample_circle_avatar" />
 
                 <TextView
-                    android:id="@+id/statusAssetCircle"
+                    android:id="@+id/statusDrawableCircle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
@@ -214,7 +177,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 4. Rounded Corners with Asset -->
+        <!-- 4. Rounded Corners with Drawable -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -234,7 +197,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/xml_asset_radius_title"
+                    android:text="@string/xml_drawable_radius_title"
                     android:textColor="@color/text_primary"
                     android:textSize="15sp"
                     android:textStyle="bold" />
@@ -244,12 +207,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:fontFamily="monospace"
-                    android:text="@string/xml_asset_radius_code"
+                    android:text="@string/xml_drawable_radius_code"
                     android:textColor="@color/primary"
                     android:textSize="12sp" />
 
                 <com.genesys.glideimageview.GlideImageView
-                    android:id="@+id/imgAssetRadius"
+                    android:id="@+id/imgDrawableRadius"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_gravity="center_horizontal"
@@ -257,10 +220,10 @@
                     android:contentDescription="@string/cd_demo_image"
                     android:scaleType="centerCrop"
                     app:glideRadius="16dp"
-                    app:glideSrc="@string/sample_asset_icon" />
+                    app:glideSrc="@drawable/placeholder_image" />
 
                 <TextView
-                    android:id="@+id/statusAssetRadius"
+                    android:id="@+id/statusDrawableRadius"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
@@ -367,6 +330,7 @@
                     android:layout_marginTop="12dp"
                     android:contentDescription="@string/cd_demo_image"
                     android:scaleType="centerCrop"
+                    app:glideError="@drawable/error_image"
                     app:glideSrc="@string/sample_url_broken" />
 
                 <TextView
@@ -381,7 +345,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 7. Null Fallback in XML -->
+        <!-- 7. Cache Type & Skip Memory Cache in XML -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -401,7 +365,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/xml_fallback_title"
+                    android:text="@string/xml_cache_title"
                     android:textColor="@color/text_primary"
                     android:textSize="15sp"
                     android:textStyle="bold" />
@@ -411,21 +375,23 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:fontFamily="monospace"
-                    android:text="@string/xml_fallback_code"
+                    android:text="@string/xml_cache_code"
                     android:textColor="@color/primary"
                     android:textSize="12sp" />
 
                 <com.genesys.glideimageview.GlideImageView
-                    android:id="@+id/imgFallback"
+                    android:id="@+id/imgCache"
                     android:layout_width="match_parent"
                     android:layout_height="160dp"
                     android:layout_marginTop="12dp"
                     android:contentDescription="@string/cd_demo_image"
                     android:scaleType="centerCrop"
-                    app:glideFallback="@drawable/error_image" />
+                    app:glideCacheType="none"
+                    app:glideSkipMemoryCache="true"
+                    app:glideSrc="@drawable/placeholder_image" />
 
                 <TextView
-                    android:id="@+id/statusFallback"
+                    android:id="@+id/statusCache"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"

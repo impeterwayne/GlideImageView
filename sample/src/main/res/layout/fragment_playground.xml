@@ -19,7 +19,7 @@
             android:contentDescription="@string/cd_demo_image"
             android:scaleType="centerCrop"
             app:glideRadius="16dp"
-            app:glideSrc="@string/sample_asset_banner" />
+            app:glideSrc="@drawable/placeholder_image" />
 
         <TextView
             android:id="@+id/tvStatus"

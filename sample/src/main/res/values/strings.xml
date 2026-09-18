@@ -11,26 +11,23 @@
     <string name="tab_extensions">Extensions</string>
     <string name="tab_playground">Playground</string>
 
-    <string name="sample_asset_banner">images/sample_banner.webp</string>
-    <string name="sample_asset_avatar">images/sample_avatar.webp</string>
-    <string name="sample_asset_icon">images/sample_icon.webp</string>
     <string name="sample_url_remote">https://picsum.photos/seed/glideext/900/500</string>
     <string name="sample_url_broken">https://invalid.example.domain/broken_image.jpg</string>
 
     <string name="xml_header_title">Declarative XML Loading</string>
-    <string name="xml_header_subtitle">All views below are loaded purely via app:glideSrc in XML without calling image.load() in Kotlin. Asset sources preview directly in the Android Studio Layout Editor.</string>
+    <string name="xml_header_subtitle">All views below are loaded purely via app:glideSrc in XML without calling image.load() in Kotlin. Asset and drawable sources preview directly in the Android Studio Layout Editor.</string>
 
     <string name="xml_asset_direct_title">Direct Asset Path</string>
     <string name="xml_asset_direct_code">app:glideSrc=\"images/sample_banner.webp\"</string>
 
-    <string name="xml_asset_res_title">Asset via strings.xml</string>
-    <string name="xml_asset_res_code">app:glideSrc=\"@string/sample_asset_banner\"</string>
+    <string name="xml_drawable_title">Drawable Resource</string>
+    <string name="xml_drawable_code">app:glideSrc=\"@drawable/placeholder_image\"</string>
 
-    <string name="xml_asset_circle_title">Circular Crop with Asset</string>
-    <string name="xml_asset_circle_code">app:glideSrc=\"@string/sample_asset_avatar\"\napp:glideCircle=\"true\"</string>
+    <string name="xml_drawable_circle_title">Circular Crop with Drawable</string>
+    <string name="xml_drawable_circle_code">app:glideSrc=\"@drawable/sample_circle_avatar\"\napp:glideCircle=\"true\"</string>
 
-    <string name="xml_asset_radius_title">Rounded Corners with Asset</string>
-    <string name="xml_asset_radius_code">app:glideSrc=\"@string/sample_asset_icon\"\napp:glideRadius=\"16dp\"</string>
+    <string name="xml_drawable_radius_title">Rounded Corners with Drawable</string>
+    <string name="xml_drawable_radius_code">app:glideSrc=\"@drawable/placeholder_image\"\napp:glideRadius=\"16dp\"</string>
 
     <string name="xml_remote_title">Remote URL in XML</string>
     <string name="xml_remote_code">app:glideSrc=\"@string/sample_url_remote\"</string>
@@ -38,8 +35,8 @@
     <string name="xml_error_title">XML Error Handling</string>
     <string name="xml_error_code">app:glideSrc=\"@string/sample_url_broken\"\napp:glideError=\"@drawable/error_image\"</string>
 
-    <string name="xml_fallback_title">XML Null Fallback</string>
-    <string name="xml_fallback_code">app:glideFallback=\"@drawable/error_image\"</string>
+    <string name="xml_cache_title">Cache Type &amp; Skip Memory Cache</string>
+    <string name="xml_cache_code">app:glideCacheType=\"none\"\napp:glideSkipMemoryCache=\"true\"</string>
 
     <string name="shapes_caption">Shapes are a list, so they stack. The last four tiles are combinations a mutually-exclusive circle-or-radius flag cannot express; Squircle, Border and Grayscale are defined in the sample module.</string>
     <string name="shape_none">none</string>
@@ -67,8 +64,7 @@
 
     <string name="status_loading">Loading…</string>
     <string name="status_success">Loaded from %1$s</string>
-    <string name="status_failed">Failed — error fallback shown</string>
-    <string name="status_fallback">Null source — fallback shown</string>
+    <string name="status_failed">Failed — error drawable shown</string>
     <string name="status_cleared">Cleared</string>
 
     <string name="cd_demo_image">Demo image</string>

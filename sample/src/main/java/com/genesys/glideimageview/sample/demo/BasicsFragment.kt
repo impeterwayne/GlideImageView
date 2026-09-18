@@ -18,20 +18,15 @@ class BasicsFragment : Fragment(R.layout.fragment_basics) {
         val binding = FragmentBasicsBinding.bind(view)
 
         trackStatus(binding.imgAssetDirect, binding.statusAssetDirect)
-        trackStatus(binding.imgAssetRes, binding.statusAssetRes)
-        trackStatus(binding.imgAssetCircle, binding.statusAssetCircle)
-        trackStatus(binding.imgAssetRadius, binding.statusAssetRadius)
+        trackStatus(binding.imgDrawable, binding.statusDrawable)
+        trackStatus(binding.imgDrawableCircle, binding.statusDrawableCircle)
+        trackStatus(binding.imgDrawableRadius, binding.statusDrawableRadius)
         trackStatus(binding.imgRemote, binding.statusRemote)
         trackStatus(binding.imgError, binding.statusError)
-        trackStatus(binding.imgFallback, binding.statusFallback)
+        trackStatus(binding.imgCache, binding.statusCache)
     }
 
     private fun trackStatus(image: GlideImageView, statusView: TextView) {
-        if (image.source == null) {
-            statusView.setText(R.string.status_fallback)
-            return
-        }
-
         image.addOnLoadListener(object : OnLoadListener {
             override fun onLoadStarted(view: GlideImageView) {
                 statusView.setText(R.string.status_loading)

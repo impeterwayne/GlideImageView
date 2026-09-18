@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import androidx.annotation.DrawableRes
 import androidx.appcompat.widget.AppCompatImageView
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.RequestManager
@@ -20,12 +21,14 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory
+import com.bumptech.glide.load.Key
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import java.util.concurrent.CopyOnWriteArrayList
 
 open class GlideImageView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.glideImageViewStyle
+    defStyleAttr: Int = 0
 ) : AppCompatImageView(context, attrs, defStyleAttr) {
 
     private var isReady = false
@@ -53,7 +56,12 @@ open class GlideImageView @JvmOverloads constructor(
             if (isSourceAssigned && field == value) return
             isSourceAssigned = true
             field = value
-            if (value == null) applyNullSource() else reload()
+            if (value == null) {
+                clear()
+                isSourceAssigned = true
+            } else {
+                reload()
+            }
         }
 
     var shapes: List<Shape>
@@ -72,6 +80,24 @@ open class GlideImageView @JvmOverloads constructor(
         get() = options.decorators
         set(value) {
             options = options.copy(decorators = value)
+        }
+
+    var cacheType: CacheType?
+        get() = options.cacheType
+        set(value) {
+            options = options.copy(cacheType = value)
+        }
+
+    var skipMemoryCache: Boolean
+        get() = options.skipMemoryCache
+        set(value) {
+            options = options.copy(skipMemoryCache = value)
+        }
+
+    var signature: Key?
+        get() = options.signature
+        set(value) {
+            options = options.copy(signature = value)
         }
 
     private val glideListener = object : RequestListener<Drawable> {
@@ -105,6 +131,10 @@ open class GlideImageView @JvmOverloads constructor(
 
     fun load(model: Any?) {
         source = model
+    }
+
+    fun load(@DrawableRes resourceId: Int) {
+        source = resourceId
     }
 
     fun loadAsset(assetPath: String?) {
@@ -167,7 +197,7 @@ open class GlideImageView @JvmOverloads constructor(
             return
         }
         dispatch { it.onLoadStarted(this) }
-        buildRequest(requestManager().load(resolved)).into(this)
+        buildRequest(requestManager().load(resolved), resolved).into(this)
     }
 
     open fun clear() {
@@ -175,12 +205,6 @@ open class GlideImageView @JvmOverloads constructor(
         isSourceAssigned = false
         setImageDrawable(null)
         dispatch { it.onCleared(this) }
-    }
-
-    private fun applyNullSource() {
-        clear()
-        isSourceAssigned = true
-        if (options.fallback != ImageOptions.NO_RESOURCE) setImageResource(options.fallback)
     }
 
     protected open fun requestManager(): RequestManager =
@@ -194,7 +218,10 @@ open class GlideImageView @JvmOverloads constructor(
         return DefaultModelResolver.resolve(context, source)
     }
 
-    protected open fun buildRequest(request: RequestBuilder<Drawable>): RequestBuilder<Drawable> {
+    protected open fun buildRequest(
+        request: RequestBuilder<Drawable>,
+        model: Any? = null
+    ): RequestBuilder<Drawable> {
         var result = request
         val current = options
 
@@ -202,7 +229,6 @@ open class GlideImageView @JvmOverloads constructor(
             result = result.placeholder(current.placeholder)
         }
         if (current.error != ImageOptions.NO_RESOURCE) result = result.error(current.error)
-        if (current.fallback != ImageOptions.NO_RESOURCE) result = result.fallback(current.fallback)
 
         val transforms = buildTransformations()
         result = when (transforms.size) {
@@ -220,11 +246,29 @@ open class GlideImageView @JvmOverloads constructor(
             result.dontAnimate()
         }
 
-        result = result.listener(glideListener)
+        current.signature?.let { result = result.signature(it) }
+
+        val explicitStrategy = current.cacheType?.strategy
+        val bypassCache = explicitStrategy == null && isLocalResource(model)
+
+        val diskStrategy = explicitStrategy ?: DiskCacheStrategy.NONE.takeIf { bypassCache }
+        if (diskStrategy != null) {
+            result = result.diskCacheStrategy(diskStrategy)
+        }
+        if (current.skipMemoryCache || bypassCache) {
+            result = result.skipMemoryCache(true)
+        }
 
         GlideImageViewConfig.decorators.forEach { result = it.decorate(this, result) }
         current.decorators.forEach { result = it.decorate(this, result) }
-        return result
+
+        return result.addListener(glideListener)
+    }
+
+    protected open fun isLocalResource(model: Any?): Boolean = when (model) {
+        is Int -> model != ImageOptions.NO_RESOURCE
+        is Drawable -> true
+        else -> model?.toString().orEmpty().startsWith("android.resource://", ignoreCase = true)
     }
 
     protected open fun buildTransformations(): List<Transformation<Bitmap>> {
@@ -252,17 +296,31 @@ open class GlideImageView @JvmOverloads constructor(
     protected open fun renderPreview(model: Any) {
         when (model) {
             is Int -> setImageResource(model)
-            is String -> runCatching {
-                context.assets.open(DefaultModelResolver.assetPath(model)).use {
-                    setImageBitmap(BitmapFactory.decodeStream(it))
+            is Drawable -> setImageDrawable(model)
+            is String -> {
+                if (model.startsWith("@drawable/") || model.startsWith("@mipmap/")) {
+                    val defType = if (model.startsWith("@mipmap/")) "mipmap" else "drawable"
+                    val name = model.substringAfter('/')
+                    val resId = runCatching {
+                        context.resources.getIdentifier(name, defType, context.packageName)
+                    }.getOrDefault(0)
+                    if (resId != 0) {
+                        setImageResource(resId)
+                        return
+                    }
                 }
-            }.onFailure { renderPreviewFallback() }
+                runCatching {
+                    context.assets.open(DefaultModelResolver.assetPath(model)).use {
+                        setImageBitmap(BitmapFactory.decodeStream(it))
+                    }
+                }.onFailure { renderPreviewPlaceholder() }
+            }
 
-            else -> renderPreviewFallback()
+            else -> renderPreviewPlaceholder()
         }
     }
 
-    protected open fun renderPreviewFallback() {
+    protected open fun renderPreviewPlaceholder() {
         if (options.placeholder != ImageOptions.NO_RESOURCE) setImageResource(options.placeholder)
     }
 
@@ -278,32 +336,74 @@ open class GlideImageView @JvmOverloads constructor(
     private fun applyAttributes(attrs: AttributeSet?, defStyleAttr: Int) {
         val defaults = options
         val typed = context.obtainStyledAttributes(
-            attrs, R.styleable.GlideImageView, defStyleAttr, R.style.Widget_GlideImageView
+            attrs, R.styleable.GlideImageView, defStyleAttr, 0
         )
         try {
             val declaresShape = typed.hasValue(R.styleable.GlideImageView_glideCircle) ||
                 typed.hasValue(R.styleable.GlideImageView_glideRadius)
+
+            val cacheTypeId = typed.getInt(R.styleable.GlideImageView_glideCacheType, -1)
+            val parsedCacheType =
+                if (cacheTypeId >= 0) CacheType.fromId(cacheTypeId) else defaults.cacheType
+
+            val skipMemory = typed.getBoolean(
+                R.styleable.GlideImageView_glideSkipMemoryCache,
+                defaults.skipMemoryCache
+            )
 
             options = defaults.copy(
                 placeholder = typed.getResourceId(
                     R.styleable.GlideImageView_glidePlaceholder, defaults.placeholder
                 ),
                 error = typed.getResourceId(R.styleable.GlideImageView_glideError, defaults.error),
-                fallback = typed.getResourceId(
-                    R.styleable.GlideImageView_glideFallback, defaults.fallback
-                ),
                 crossFade = typed.getBoolean(
                     R.styleable.GlideImageView_glideCrossFade, defaults.crossFade
                 ),
                 crossFadeDurationMs = typed.getInt(
                     R.styleable.GlideImageView_glideCrossFadeDuration, defaults.crossFadeDurationMs
                 ),
-                shapes = if (declaresShape) xmlShapes(typed) else defaults.shapes
+                shapes = if (declaresShape) xmlShapes(typed) else defaults.shapes,
+                cacheType = parsedCacheType,
+                skipMemoryCache = skipMemory
             )
-            typed.getString(R.styleable.GlideImageView_glideSrc)?.let { source = it }
+            resolveXmlSource(typed)?.let { source = it }
         } finally {
             typed.recycle()
         }
+    }
+
+    private fun resolveXmlSource(typed: TypedArray): Any? {
+        val attrId = R.styleable.GlideImageView_glideSrc
+        if (!typed.hasValue(attrId)) return null
+
+        if (isInEditMode) {
+            runCatching { typed.getDrawable(attrId) }.getOrNull()?.let {
+                return it
+            }
+        }
+
+        val drawable = runCatching { typed.getDrawable(attrId) }.getOrNull()
+        val resId = typed.getResourceId(attrId, 0)
+        if (drawable != null && resId != 0) {
+            return resId
+        }
+
+        if (resId != 0) {
+            val typeName = runCatching { context.resources.getResourceTypeName(resId) }.getOrNull()
+            if (typeName == "drawable" || typeName == "mipmap") {
+                return resId
+            }
+        }
+
+        val rawString = typed.getString(attrId) ?: return null
+        if (rawString.startsWith("@drawable/") || rawString.startsWith("@mipmap/")) {
+            val defType = if (rawString.startsWith("@mipmap/")) "mipmap" else "drawable"
+            val name = rawString.substringAfter('/')
+            val id = runCatching { context.resources.getIdentifier(name, defType, context.packageName) }.getOrDefault(0)
+            if (id != 0) return id
+        }
+
+        return rawString
     }
 
     private fun xmlShapes(typed: TypedArray): List<Shape> = buildList {

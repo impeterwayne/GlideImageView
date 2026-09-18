@@ -15,6 +15,7 @@ import com.genesys.glideimageview.sample.databinding.ItemShapeBinding
 import com.genesys.glideimageview.sample.ext.BorderShape
 import com.genesys.glideimageview.sample.ext.GrayscaleShape
 import com.genesys.glideimageview.sample.ext.SquircleShape
+import androidx.core.graphics.toColorInt
 
 class ShapesFragment : Fragment(R.layout.fragment_scroll_list) {
 
@@ -63,7 +64,7 @@ class ShapesFragment : Fragment(R.layout.fragment_scroll_list) {
             getString(R.string.shape_rounded_border),
             listOf(
                 Shape.RoundedCorners((16 * density).toInt()),
-                BorderShape(4 * density, Color.parseColor("#2563EB"), 16 * density)
+                BorderShape(4 * density, "#2563EB".toColorInt(), 16 * density)
             )
         ),
         ShapeDemo(

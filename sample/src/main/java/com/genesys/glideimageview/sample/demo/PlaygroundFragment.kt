@@ -34,6 +34,7 @@ class PlaygroundFragment : Fragment(R.layout.fragment_playground) {
 
     private val sources = listOf(
         Option<Any?>("Remote", SampleImages.REMOTE),
+        Option<Any?>("Drawable", R.drawable.placeholder_image),
         Option<Any?>("Asset", SampleImages.BANNER),
         Option<Any?>("Avatar model", Avatar(userId = 7, sizePx = 600)),
         Option<Any?>("Broken URL", SampleImages.BROKEN),

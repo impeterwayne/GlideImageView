@@ -6,14 +6,6 @@
         <item name="android:windowBackground">@color/background</item>
         <item name="android:statusBarColor">@color/background</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="glideImageViewStyle">@style/Widget.Sample.Image</item>
-    </style>
-
-    <style name="Widget.Sample.Image" parent="Widget.GlideImageView">
-        <item name="glidePlaceholder">@drawable/placeholder_image</item>
-        <item name="glideError">@drawable/error_image</item>
-        <item name="glideCrossFade">true</item>
-        <item name="glideCrossFadeDuration">250</item>
     </style>
 
     <style name="Chip.Filter" parent="Widget.Material3.Chip.Filter" />
