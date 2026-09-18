@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="glideImageViewStyle" format="reference" />
+
+    <declare-styleable name="GlideImageView">
+        <attr name="glideSrc" format="string" />
+        <attr name="glidePlaceholder" format="reference" />
+        <attr name="glideError" format="reference" />
+        <attr name="glideFallback" format="reference" />
+        <attr name="glideRadius" format="dimension" />
+        <attr name="glideCircle" format="boolean" />
+        <attr name="glideCrossFade" format="boolean" />
+        <attr name="glideCrossFadeDuration" format="integer" />
+    </declare-styleable>
+
+</resources>

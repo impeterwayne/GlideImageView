@@ -1,0 +1,31 @@
+package com.genesys.glideimageview
+
+import android.content.Context
+import java.io.File
+
+fun interface ModelResolver {
+    fun resolve(context: Context, source: Any): Any?
+}
+
+object DefaultModelResolver : ModelResolver {
+
+    const val ASSET_SCHEME: String = "file:///android_asset/"
+
+    private val KNOWN_SCHEMES = listOf(
+        "http://", "https://", "content://", "file://", "android.resource://", "data:"
+    )
+
+    override fun resolve(context: Context, source: Any): Any? = when {
+        source !is String -> source
+        source.isBlank() -> null
+        KNOWN_SCHEMES.any { source.startsWith(it, ignoreCase = true) } -> source
+        source.startsWith('/') -> File(source)
+        else -> assetUri(source)
+    }
+
+    @JvmStatic
+    fun assetUri(path: String): String = ASSET_SCHEME + path.trimStart('/')
+
+    @JvmStatic
+    fun assetPath(uri: String): String = uri.removePrefix(ASSET_SCHEME).trimStart('/')
+}

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">GlideImageView Sample</string>
+    <string name="header_title">GlideImageView</string>
+    <string name="header_subtitle">Model resolvers, composable shapes and request decorators — every tab below is configured from the sample module, not the library.</string>
+
+    <string name="tab_basics">Basics</string>
+    <string name="tab_shapes">Shapes</string>
+    <string name="tab_list">List (1000)</string>
+    <string name="tab_extensions">Extensions</string>
+    <string name="tab_playground">Playground</string>
+
+    <string name="basics_remote_title">Remote URL</string>
+    <string name="basics_asset_title">Asset path (previews in the layout editor)</string>
+    <string name="basics_resource_title">Drawable resource, as a plain Int model</string>
+    <string name="basics_error_title">Unreachable URL falls back to glideError</string>
+    <string name="basics_fallback_title">Null source falls back to glideFallback</string>
+
+    <string name="shapes_caption">Shapes are a list, so they stack. The last four tiles are combinations a mutually-exclusive circle-or-radius flag cannot express; Squircle, Border and Grayscale are defined in the sample module.</string>
+    <string name="shape_none">none</string>
+    <string name="shape_circle">Circle</string>
+    <string name="shape_rounded">Rounded 16dp</string>
+    <string name="shape_squircle">Squircle*</string>
+    <string name="shape_grayscale">Grayscale*</string>
+    <string name="shape_circle_gray">Circle + Gray</string>
+    <string name="shape_rounded_border">Rounded + Border*</string>
+    <string name="shape_squircle_gray">Squircle + Gray</string>
+
+    <string name="ext_model_title">ModelResolver: a domain model as a source</string>
+    <string name="ext_headers_title">ModelResolver: per-view auth headers</string>
+    <string name="ext_shape_title">Shape: a custom mask, composed with a border</string>
+    <string name="ext_decorator_title">RequestDecorator: raw Glide options</string>
+    <string name="ext_manager_title">RequestManagerFactory: a different Glide scope</string>
+
+    <string name="label_source">Source</string>
+    <string name="label_shapes">Shapes (stack them)</string>
+    <string name="label_decorators">Decorators</string>
+    <string name="label_scale_type">ScaleType</string>
+    <string name="label_corner_radius">Corner radius</string>
+    <string name="label_corner_radius_value">Corner radius: %1$ddp</string>
+    <string name="btn_clear">Clear</string>
+
+    <string name="status_loading">Loading…</string>
+    <string name="status_success">Loaded from %1$s</string>
+    <string name="status_failed">Failed — fallback shown</string>
+    <string name="status_cleared">Cleared</string>
+
+    <string name="cd_demo_image">Demo image</string>
+
+    <string name="sample_asset_banner">images/sample_banner.webp</string>
+
+</resources>

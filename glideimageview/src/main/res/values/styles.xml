@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Widget.GlideImageView" parent="">
+        <item name="glideCrossFade">false</item>
+        <item name="glideCrossFadeDuration">300</item>
+    </style>
+
+</resources>
