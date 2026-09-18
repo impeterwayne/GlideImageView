@@ -1,46 +1,57 @@
 package com.genesys.glideimageview.sample.demo
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.genesys.glideimageview.GlideImageView
+import com.genesys.glideimageview.OnLoadListener
 import com.genesys.glideimageview.sample.R
-import com.genesys.glideimageview.sample.SampleImages
-import com.genesys.glideimageview.sample.databinding.FragmentScrollListBinding
+import com.genesys.glideimageview.sample.databinding.FragmentBasicsBinding
 
-class BasicsFragment : Fragment(R.layout.fragment_scroll_list) {
+class BasicsFragment : Fragment(R.layout.fragment_basics) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        FragmentScrollListBinding.bind(view).container.bindDemoCards(cards())
+        val binding = FragmentBasicsBinding.bind(view)
+
+        trackStatus(binding.imgAssetDirect, binding.statusAssetDirect)
+        trackStatus(binding.imgAssetRes, binding.statusAssetRes)
+        trackStatus(binding.imgAssetCircle, binding.statusAssetCircle)
+        trackStatus(binding.imgAssetRadius, binding.statusAssetRadius)
+        trackStatus(binding.imgRemote, binding.statusRemote)
+        trackStatus(binding.imgError, binding.statusError)
+        trackStatus(binding.imgFallback, binding.statusFallback)
     }
 
-    private fun cards() = listOf(
-        DemoCard(
-            title = getString(R.string.basics_remote_title),
-            subtitle = "image.load(\"https://…\")",
-            source = SampleImages.REMOTE
-        ),
-        DemoCard(
-            title = getString(R.string.basics_asset_title),
-            subtitle = "image.load(\"images/sample_banner.webp\")",
-            source = SampleImages.BANNER
-        ),
-        DemoCard(
-            title = getString(R.string.basics_resource_title),
-            subtitle = "image.load(R.drawable.placeholder_image)",
-            source = R.drawable.placeholder_image
-        ),
-        DemoCard(
-            title = getString(R.string.basics_error_title),
-            subtitle = "glideError drawable, from GlideImageViewConfig.defaults",
-            source = SampleImages.BROKEN
-        ),
-        DemoCard(
-            title = getString(R.string.basics_fallback_title),
-            subtitle = "image.load(null) with options.fallback set",
-            source = null,
-            configure = { image ->
-                image.updateOptions { copy(fallback = R.drawable.error_image) }
+    private fun trackStatus(image: GlideImageView, statusView: TextView) {
+        if (image.source == null) {
+            statusView.setText(R.string.status_fallback)
+            return
+        }
+
+        image.addOnLoadListener(object : OnLoadListener {
+            override fun onLoadStarted(view: GlideImageView) {
+                statusView.setText(R.string.status_loading)
             }
-        )
-    )
+
+            override fun onResourceReady(
+                view: GlideImageView,
+                resource: Drawable,
+                dataSource: DataSource
+            ) {
+                statusView.text = getString(R.string.status_success, dataSource.name)
+            }
+
+            override fun onLoadFailed(view: GlideImageView, error: GlideException?) {
+                statusView.setText(R.string.status_failed)
+            }
+
+            override fun onCleared(view: GlideImageView) {
+                statusView.setText(R.string.status_cleared)
+            }
+        })
+    }
 }
