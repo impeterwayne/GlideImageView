@@ -9,3 +9,5 @@ build/
 .cxx
 local.properties
 .kotlin
+ShapeView
+

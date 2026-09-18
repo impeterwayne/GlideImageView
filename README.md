@@ -1,5 +1,9 @@
 # GlideImageView
 
+[![JitPack](https://jitpack.io/v/impeterwayne/GlideImageView.svg)](https://jitpack.io/#impeterwayne/GlideImageView)
+[![API](https://img.shields.io/badge/API-23%2B-brightgreen.svg)](https://android-arsenal.com/api?level=23)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 A Glide-backed `ImageView` for Android designed for declarative image loading in XML via `app:glideSrc`, featuring **instant Android Studio Layout Editor preview** for assets and drawables, and zero-boilerplate loading. When dynamic runtime behavior or custom models are needed, it extends seamlessly in Kotlin without modifying library code.
 
 ```xml
@@ -223,7 +227,67 @@ GlideImageViewConfig.listeners += LoadStats
 
 ---
 
-## Setup
+## Installation
+
+### 1. Add JitPack repository
+
+Add JitPack to your `settings.gradle` or `settings.gradle.kts`:
+
+<details open>
+<summary><b>Groovy (settings.gradle)</b></summary>
+
+```groovy
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+</details>
+
+<details>
+<summary><b>Kotlin DSL (settings.gradle.kts)</b></summary>
+
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+    }
+}
+```
+</details>
+
+### 2. Add dependency
+
+Add the library to your app module `build.gradle` or `build.gradle.kts`:
+
+<details open>
+<summary><b>Groovy (build.gradle)</b></summary>
+
+```groovy
+dependencies {
+    implementation 'com.github.impeterwayne:GlideImageView:1.0.0'
+}
+```
+</details>
+
+<details>
+<summary><b>Kotlin DSL (build.gradle.kts)</b></summary>
+
+```kotlin
+dependencies {
+    implementation("com.github.impeterwayne:GlideImageView:1.0.0")
+}
+```
+</details>
+
+---
+
+## Local Development & Sample
 
 ```groovy
 // settings.gradle
@@ -241,3 +305,4 @@ dependencies {
 ```
 
 Outputs: `glideimageview/build/outputs/aar/` and `sample/build/outputs/apk/debug/`.
+
